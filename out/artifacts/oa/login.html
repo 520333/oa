@@ -9,6 +9,14 @@
     <script src="/assets/vue/vue.global.js"></script>
     <script src="/assets/element-plus/index.full.js"></script>
     <script src="/assets/axios/axios.js"></script>
+    <script>
+        const ua = navigator.userAgent.toLowerCase();
+        console.log(ua);
+        if (ua.indexOf("iphone")!=-1||ua.indexOf("android")!=-1){
+            console.info("我是移动端")
+            window.location = '/mobile-login.html';
+        }
+    </script>
     <style>
         .login-box {
             border: 1px solid #DCDFE6;

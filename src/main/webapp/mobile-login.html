@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mobile Login</title>
+    <!--基于设备逻辑分辨率页面开发，禁止页面缩放-->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="assets/vant/index.css">
+    <script src="assets/vue/vue.global.js"></script>
+    <script src="assets/vant/vant.min.js"></script>
+    <script src="/assets/axios/axios.js"></script>
+</head>
+<body>
+<div id="app">
+    <h3 style="padding-left:32px">工单日报</h3>
+    <!--<h3 style="padding-left:32px">会员登录</h3>-->
+    <van-form ref="loginForm">
+        <van-cell-group inset>
+            <van-field
+                    v-model="username"
+                    name="用户名"
+                    label="用户名"
+                    autocomplete="off"
+                    placeholder="请输入用户名"
+                    :rules="[{ required: true, message: '请填写用户名' }]"
+            />
+        </van-cell-group>
+        <van-cell-group inset>
+            <van-field
+                    v-model="password"
+                    type="password"
+                    name="密码"
+                    label="密码"
+                    placeholder="请输入密码"
+                    :rules="[{ required: true, message: '请填写密码' }]"
+            />
+        </van-cell-group>
+        <div style="margin: 16px;">
+            <van-button round block type="primary" @click="onSubmit('loginForm')">
+                登录
+            </van-button>
+        </div>
+    </van-form>
+
+</div>
+<script>
+    const Main = {
+        data(){
+            return {
+                username: "",
+                password: ""
+            }
+        }
+        ,methods:{
+            onSubmit: function (formName) {
+                const form = this.$refs[formName];
+                const objApp = this;
+                form.validate().then(function(){
+                    //这里组织表单验证后登录代码
+                    console.info(objApp)
+                    const params = new URLSearchParams();
+                    params.append("username",objApp.username)
+                    params.append("password",objApp.password)
+                    axios.post("/api/login",params)
+                    .then(function (response) {
+                        const json = response.data;
+                        if (json.code=="0"){
+                            vant.Toast.success('登录成功');
+                            sessionStorage.uid=json.data.user.userId
+                            sessionStorage.eid=json.data.user.employeeId
+                            window.location = '/index.html';
+                        }else{
+                            vant.Dialog.alert({
+                                title : "登录失败",
+                                message : json.message
+                            })
+                        }
+                    })
+                }).catch(function(e){console.debug("表单验证失败",e)});
+            }
+        }
+    }
+    const app = Vue.createApp(Main);
+    app.use(vant);
+    app.use(vant.Lazyload);//延迟加载
+    app.mount("#app");
+</script>
+</body>
+</html>
